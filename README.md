@@ -6,10 +6,6 @@
 
 This project demonstrates how to map a one-to-many database relationship using JPA and Hibernate in a Spring Boot application. It illustrates a scenario where each post can have multiple comments associated with it.
 
-# JPA / Hibernate One to Many Mapping Example with Spring Boot
-
-This project demonstrates how to implement a one-to-many database relationship at the object level using JPA and Hibernate within a Spring Boot application.
-
 ## Overview
 
 The project showcases the mapping between two tables - posts and comments - in a Blog database schema, where the posts table has a one-to-many relationship with the comments table.
@@ -87,6 +83,31 @@ jpa-one-to-many-demo/
 └── pom.xml
 
 
+# JPA / Hibernate One to Many Mapping Example with Spring Boot
+
+This project provides an example of implementing a one-to-many database relationship using JPA and Hibernate within a Spring Boot application.
+
+## Key Concepts
+
+- **One-to-Many Relationship**: Understand the concept of a one-to-many relationship between entities in a database schema.
+
+- **JPA and Hibernate**: Learn how to use JPA (Java Persistence API) and Hibernate to map Java objects to database tables and vice versa.
+
+- **Domain Models**: Define domain models (`Post` and `Comment` entities) to represent the data structure of the application.
+
+- **CRUD Operations**: Implement CRUD (Create, Read, Update, Delete) operations on the entities using RESTful APIs.
+
+- **Database Configuration**: Configure database properties such as URL, username, and password in the `application.properties` file.
+
+- **Automatic Table Creation**: Utilize Hibernate's feature to automatically create database tables from entity classes.
+
+- **Exception Handling**: Handle exceptions, such as resource not found, in the REST APIs using custom exception classes.
+
+- **Directory Structure**: Understand the organization of project files and packages, including controllers, models, repositories, and the main application class.
+
+## Conclusion
+
+This project serves as a practical guide for learning how to work with one-to-many relationships in a Spring Boot application using JPA and Hibernate.
 
 
 ## Conclusion
