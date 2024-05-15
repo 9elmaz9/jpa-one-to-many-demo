@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post and Comment Management</title>
+    <script>
+        async function fetchPosts() {
+            const response = await fetch('/posts');
+            const posts = await response.json();
+            const postsList = document.getElementById('postsList');
+            postsList.innerHTML = '';
+            posts.content.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.innerHTML = `
+                    <div>
+                        <strong>Title:</strong> ${post.title}<br>
+                        <strong>Description:</strong> ${post.description}<br>
+                        <strong>Content:</strong> ${post.content}<br>
+                        <button onclick="editPost(${post.id})">Edit</button>
+                        <button onclick="deletePost(${post.id})">Delete</button>
+                        <button onclick="toggleComments(${post.id})">Toggle Comments</button>
+                    </div>
+                    <div id="commentsSection-${post.id}" style="display: none;">
+                        <h3>Comments</h3>
+                        <ul id="commentsList-${post.id}"></ul>
+                        <textarea id="newComment-${post.id}" placeholder="New Comment"></textarea><br>
+                        <button onclick="createComment(${post.id})">Add Comment</button>
+                    </div>
+                `;
+                postsList.appendChild(postElement);
+                fetchComments(post.id);
+            });
+        }
+
+            async function createPost() {
+            const title = document.getElementById('postTitle').value;
+            const description = document.getElementById('postDescription').value;
+            const content = document.getElementById('postContent').value;
+            const response = await fetch('/posts', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+        },
+            body: JSON.stringify({title, description, content})
+        });
+            if (response.ok) {
+            closeModal();
+            // После создания поста обновляем список постов
+            fetchPosts();
+        } else {
+            alert('Failed to create post');
+        }
+        }
+
+    function toggleComments(postId) {
+    const commentsSection = document.getElementById(`commentsSection-${postId}`);
+    if (commentsSection.style.display === 'none') {
+    commentsSection.style.display = 'block';
+    } else {
+    commentsSection.style.display = 'none';
+    }
+    }
+
+    function openModal() {
+    document.getElementById('createPostModal').style.display = 'block';
+    }
+
+    function closeModal() {
+    document.getElementById('createPostModal').style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchPosts);
+    </script>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<h1>Post and Comment Management</h1>
+<nav>
+    <a href="/">Home</a> | <a href="#" onclick="openModal()">Create Post</a>
+</nav>
+
+<section id="posts-section">
+
+    <div id="postsList"></div>
+</section>
+
+<!-- The Modal -->
+<div id="createPostModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Create Post</h2>
+        <input type="text" id="postTitle" placeholder="Title"><br>
+        <input type="text" id="postDescription" placeholder="Description"><br>
+        <textarea id="postContent" placeholder="Content"></textarea><br>
+        <button onclick="createPost()">Create Post</button>
+    </div>
+</div>
+</body>
+</html>

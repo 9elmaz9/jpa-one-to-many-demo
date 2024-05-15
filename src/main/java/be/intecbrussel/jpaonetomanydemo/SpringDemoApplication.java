@@ -2,12 +2,14 @@ package be.intecbrussel.jpaonetomanydemo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+@EnableJpaAuditing
 @SpringBootApplication
-public class JpaOneToManyDemoApplication {
+public class SpringDemoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(JpaOneToManyDemoApplication.class, args);
+        SpringApplication.run(SpringDemoApplication.class, args);
     }
 
 }
