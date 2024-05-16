@@ -1,134 +1,121 @@
-
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post and Comment Management</title>
-    <script>
-        async function fetchPosts() {
-            const response = await fetch('/posts');
-            const posts = await response.json();
-            const postsList = document.getElementById('postsList');
-            postsList.innerHTML = '';
-            posts.content.forEach(post => {
-                const postElement = document.createElement('div');
-                postElement.innerHTML = `
-                    <div>
-                        <strong>Title:</strong> ${post.title}<br>
-                        <strong>Description:</strong> ${post.description}<br>
-                        <strong>Content:</strong> ${post.content}<br>
-                        <button onclick="editPost(${post.id})">Edit</button>
-                        <button onclick="deletePost(${post.id})">Delete</button>
-                        <button onclick="toggleComments(${post.id})">Toggle Comments</button>
-                    </div>
-                    <div id="commentsSection-${post.id}" style="display: none;">
-                        <h3>Comments</h3>
-                        <ul id="commentsList-${post.id}"></ul>
-                        <textarea id="newComment-${post.id}" placeholder="New Comment"></textarea><br>
-                        <button onclick="createComment(${post.id})">Add Comment</button>
-                    </div>
-                `;
-                postsList.appendChild(postElement);
-                fetchComments(post.id);
-            });
-        }
-
-            async function createPost() {
-            const title = document.getElementById('postTitle').value;
-            const description = document.getElementById('postDescription').value;
-            const content = document.getElementById('postContent').value;
-            const response = await fetch('/posts', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json'
-        },
-            body: JSON.stringify({title, description, content})
-        });
-            if (response.ok) {
-            closeModal();
-            // После создания поста обновляем список постов
-            fetchPosts();
-        } else {
-            alert('Failed to create post');
-        }
-        }
-
-    function toggleComments(postId) {
-    const commentsSection = document.getElementById(`commentsSection-${postId}`);
-    if (commentsSection.style.display === 'none') {
-    commentsSection.style.display = 'block';
-    } else {
-    commentsSection.style.display = 'none';
-    }
-    }
-
-    function openModal() {
-    document.getElementById('createPostModal').style.display = 'block';
-    }
-
-    function closeModal() {
-    document.getElementById('createPostModal').style.display = 'none';
-    }
-
-    document.addEventListener('DOMContentLoaded', fetchPosts);
-    </script>
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
+    <title>Frontend for Post and Comment Management</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<h1>Post and Comment Management</h1>
-<nav>
-    <a href="/">Home</a> | <a href="#" onclick="openModal()">Create Post</a>
-</nav>
+<div class="container mt-5">
+    <h1>Post and Comment Management</h1>
+    <nav>
+        <ul>
+            <li><a href="#" onclick="showHome()">Home</a></li>
+            <li><a href="#" onclick="fetchPosts()">Posts</a></li>
+            <li><a href="#" onclick="showCreatePostForm()">Create Post</a></li>
+        </ul>
+    </nav>
 
-<section id="posts-section">
+    <div id="homeSection" style="display: block;">
+        <div id="postsList"></div>
+    </div>
 
-    <div id="postsList"></div>
-</section>
-
-<!-- The Modal -->
-<div id="createPostModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Create Post</h2>
-        <input type="text" id="postTitle" placeholder="Title"><br>
-        <input type="text" id="postDescription" placeholder="Description"><br>
-        <textarea id="postContent" placeholder="Content"></textarea><br>
-        <button onclick="createPost()">Create Post</button>
+    <div id="createPostSection" style="display: none;">
+        <h2>Create a New Post</h2>
+        <form id="postForm">
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" class="form-control" id="description" name="description" required>
+            </div>
+            <div class="form-group">
+                <label for="content">Content:</label>
+                <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Create</button>
+        </form>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    // Функция для получения всех постов
+    function fetchPosts() {
+        $.ajax({
+            url: '/posts',
+            type: 'GET',
+            success: function(response) {
+                displayPosts(response);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching posts:', error);
+            }
+        });
+    }
+
+    // Функция для отображения всех постов
+    function displayPosts(posts) {
+        let postsList = $('#postsList');
+        postsList.empty();
+        posts.forEach(function(post) {
+            postsList.append(`
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">${post.title}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">${post.description}</h6>
+                        <p class="card-text">${post.content}</p>
+                    </div>
+                </div>
+            `);
+        });
+    }
+
+    // Функция для переключения на домашнюю страницу
+    function showHome() {
+        $('#homeSection').show();
+        $('#createPostSection').hide();
+    }
+
+    // Функция для отображения формы создания нового поста
+    function showCreatePostForm() {
+        $('#homeSection').hide();
+        $('#createPostSection').show();
+    }
+    // Функция для отправки данных нового поста на сервер
+    $('#postForm').submit(function(e) {
+        e.preventDefault();
+        console.log("Form submitted!"); // Выводим сообщение в консоль
+        let postData = {
+            title: $('#title').val(),
+            description: $('#description').val(),
+            content: $('#content').val()
+        };
+        console.log("Post data:", postData); // Выводим данные формы в консоль
+        $.ajax({
+            url: '/posts',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(postData),
+            success: function(response) {
+                console.log("Post created successfully!"); // Выводим сообщение об успешном создании поста
+                fetchPosts(); // После создания поста обновляем список
+                showHome(); // Переключаемся на домашнюю страницу
+            },
+            error: function(xhr, status, error) {
+                console.error('Error creating post:', error); // Выводим сообщение об ошибке в консоль
+            }
+        });
+    });
+
+
+    // При загрузке страницы сразу загружаем все посты
+    $(document).ready(function() {
+        fetchPosts();
+    });
+</script>
 </body>
 </html>

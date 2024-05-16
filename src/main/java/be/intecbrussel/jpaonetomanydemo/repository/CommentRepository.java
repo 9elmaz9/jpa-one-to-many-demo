@@ -7,10 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+// Аннотация @Repository указывает, что данный класс является репозиторием Spring.
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
+    // Метод для поиска комментариев по идентификатору поста с пагинацией.
     Page<Comment> findByPostId(Long postId, Pageable pageable);
 
+
+
+    // Метод для поиска комментария по его идентификатору и идентификатору поста.
     Optional<Comment> findByIdAndPostId(Long id, Long postId);
 }

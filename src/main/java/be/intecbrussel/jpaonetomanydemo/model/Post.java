@@ -10,15 +10,22 @@ import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
+// Аннотация @Entity указывает, что данный класс является сущностью, представляющей таблицу в базе данных.
+
 @Entity
-@Table(name = "posts")
+@Table(name = "posts")   // Аннотация @Table указывает на имя таблицы, в которой будут храниться объекты этой сущности.
+
 public class Post extends AuditModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)    // Аннотация @GeneratedValue указывает на то, что значение этого поля будет автоматически генерироваться.
+
     private Long id;
-    @NotNull
-    @Size(max = 100)
-    @Column(unique = true)
+    @NotNull     // Аннотация @NotNull обозначает, что это поле не может быть пустым.
+
+    @Size(max = 100)      // Аннотация @Size указывает на максимальный размер для значения этого поля.
+
+    @Column(unique = true)      // Аннотация @Column позволяет настроить свойства столбца базы данных.
+
     private String title;
     @NotNull
     @Size(max = 250)
@@ -28,7 +35,8 @@ public class Post extends AuditModel {
     }
 
     @NotNull
-    @Lob
+    @Lob       // Аннотация @Lob указывает, что это поле представляет собой большой объект.
+
     private String content;
 
     public Set<Comment> getComments() {
@@ -39,6 +47,8 @@ public class Post extends AuditModel {
         this.comments = comments;
     }
 
+
+    // Связь "один ко многим" с сущностью Comment.
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
     private Set<Comment> comments = new HashSet<>();
 
